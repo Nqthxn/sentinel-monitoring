@@ -1,0 +1,23 @@
+<div class="p-4">
+  <h1 class="text-2xl font-bold mb-4">Running Containers</h1>
+  <div *ngIf="containerData">
+    <table class="min-w-full bg-white border border-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="py-2 px-4 border-b">Name</th>
+          <th class="py-2 px-4 border-b">Image</th>
+          <th class="py-2 px-4 border-b">Status</th>
+          <th class="py-2 px-4 border-b">Memory Usage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let container of containerData" class="hover:bg-gray-100">
+          <td class="py-2 px-4 border-b">{{ container.name }}</td>
+          <td class="py-2 px-4 border-b">{{ container.image }}</td>
+          <td class="py-2 px-4 border-b">{{ container.status }}</td>
+          <td class="py-2 px-4 border-b">{{ container.memory.usageBytes }} / {{ container.memory.limitBytes }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
