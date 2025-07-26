@@ -1,5 +1,4 @@
-package com.nathan.sentinel.sentinel_backend.config;
-
+package com.nathan.sentinel.config; 
 
 import java.time.Duration;
 
@@ -13,26 +12,25 @@ import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 
-
-
 @Configuration
 public class DockerConfig {
+
     @Value("${docker.host}")
-    private String dockerHost; 
+    private String dockerHost;
 
     @Bean
-    public DockerClient dockerClient(){
+    public DockerClient dockerClient() {
         DefaultDockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-            .withDockerHost(dockerHost)
-            .build();
+                .withDockerHost(dockerHost)
+                .build();
 
         DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
-            .dockerHost(config.getDockerHost())
-            .sslConfig(config.getSSLConfig())
-            .maxConnections(100)
-            .connectionTimeout(Duration.ofSeconds(30))
-            .responseTimeout(Duration.ofSeconds(45))
-            .build();
+                .dockerHost(config.getDockerHost())
+                .sslConfig(config.getSSLConfig())
+                .maxConnections(100)
+                .connectionTimeout(Duration.ofSeconds(30))
+                .responseTimeout(Duration.ofSeconds(45))
+                .build();
 
         return DockerClientImpl.getInstance(config, httpClient);
     }

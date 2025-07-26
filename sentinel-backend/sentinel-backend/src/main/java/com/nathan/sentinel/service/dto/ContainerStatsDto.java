@@ -1,4 +1,4 @@
-package com.nathan.sentinel.sentinel_backend.service.dto;
+package com.nathan.sentinel.service.dto;
 
 public record ContainerStatsDto(
     String id, 

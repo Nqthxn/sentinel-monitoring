@@ -1,4 +1,4 @@
-package com.nathan.sentinel.sentinel_backend.service;
+package com.nathan.sentinel.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Container;
-import com.nathan.sentinel.sentinel_backend.service.dto.ContainerStatsDto;
+import com.nathan.sentinel.service.dto.ContainerStatsDto;
 
 @Service
 public class DockerStatsService {
@@ -33,7 +33,7 @@ public class DockerStatsService {
         var memStats = new ContainerStatsDto.MemoryStatsDto(0L, 0L);
         var netStats = new ContainerStatsDto.NetworkStatsDto(0L, 0L);
 
-        String name = container.getNames()[0].substring(1);
+        String name = container.getId().substring(0, 12);
 
         return new ContainerStatsDto(
             container.getId(),

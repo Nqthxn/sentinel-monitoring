@@ -1,4 +1,4 @@
-package com.nathan.sentinel.sentinel_backend;
+package com.nathan.sentinel;
 
 
 import org.springframework.boot.SpringApplication;
