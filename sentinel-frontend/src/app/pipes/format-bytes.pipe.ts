@@ -15,7 +15,7 @@ export class FormatBytesPipe implements PipeTransform {
 
     const i = Math.floor(Math.log(bytes)/Math.log(k));
 
-    return parseFloat((bytes / Math.pow(i, k)).toFixed(dm)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k,i)).toFixed(dm)) + ' ' + sizes[i - 1];
   }
 
 }
