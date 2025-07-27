@@ -8,6 +8,8 @@
           <th class="py-2 px-4 border-b">Image</th>
           <th class="py-2 px-4 border-b">Status</th>
           <th class="py-2 px-4 border-b">Memory Usage</th>
+          <th class="py-2 px-4 border-b">CPU Usage</th>
+
         </tr>
       </thead>
       <tbody>
@@ -15,7 +17,16 @@
           <td class="py-2 px-4 border-b">{{ container.name }}</td>
           <td class="py-2 px-4 border-b">{{ container.image }}</td>
           <td class="py-2 px-4 border-b">{{ container.status }}</td>
-          <td class="py-2 px-4 border-b">{{ container.memory.usageBytes }} / {{ container.memory.limitBytes }}</td>
+          <td class="py-2 px-4 border-b">
+            {{ container.memory.usageBytes | formatBytes }} / {{ container.memory.limitBytes | formatBytes }}
+          </td>
+          <td class="py-2 px-4 border-b">
+            <div class="w-full bg-gray-200 rounded-full h-4">
+                <div class="bg-blue-600 h-4 rounded-full" [style.width]="container.cpu.usagePercent + '%'">
+                </div>
+                <span class="text-xs">{{ container.cpu.usagePercent.toFixed(2) }}%</span>
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>

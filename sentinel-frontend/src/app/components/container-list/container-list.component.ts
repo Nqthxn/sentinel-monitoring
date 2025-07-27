@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ContainerService } from '../../services/container.service';
 import { ContainerData } from '../../services/container.service';
+import { FormatBytesPipe } from "../../pipes/format-bytes.pipe";
 
 @Component({
   selector: 'app-container-list',
   standalone: true, 
-  imports: [CommonModule],
+  imports: [CommonModule, FormatBytesPipe],
   templateUrl: './container-list.component.html',
   styleUrl: './container-list.component.scss'
 })
