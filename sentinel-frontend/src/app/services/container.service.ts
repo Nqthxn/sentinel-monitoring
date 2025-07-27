@@ -29,7 +29,7 @@ export interface NetworkStats{
   providedIn: 'root'
 })
 export class ContainerService {
-  private baseUrl = 'http://localhost:8080/api/v1';
+  private baseUrl = '/api/v1';
   constructor(private http: HttpClient) { }
 
   getRunningContainers(): Observable<ContainerData[]>{

@@ -33,81 +33,119 @@ public class DockerStatsService {
             .collect(Collectors.toList());
     }
 
-
-    public ContainerStatsDto mapToDto(Container container){
+    public ContainerStatsDto mapToDto(Container container) {
         Statistics stats = getLatestStats(container.getId());
 
-        long usageBytes = 0;
-        long limitBytes = 0;
-
-        if(stats.getMemoryStats() != null){
-            usageBytes = stats.getMemoryStats().getUsage();
-            limitBytes = stats.getMemoryStats().getLimit();
+        long usageBytes = 0L;
+        long limitBytes = 0L;
+        if (stats.getMemoryStats() != null) {
+            usageBytes = stats.getMemoryStats().getUsage() != null ? stats.getMemoryStats().getUsage() : 0L;
+            limitBytes = stats.getMemoryStats().getLimit() != null ? stats.getMemoryStats().getLimit() : 0L;
         }
-
         var memStats = new ContainerStatsDto.MemoryStatsDto(usageBytes, limitBytes);
 
-        double cpuUsagePercent = 0.0;
-        if (stats.getPreCpuStats() != null && stats.getCpuStats() != null &&
-            stats.getPreCpuStats().getSystemCpuUsage() != null && stats.getCpuStats().getSystemCpuUsage() != null &&
-            stats.getCpuStats().getCpuUsage() != null && stats.getPreCpuStats().getCpuUsage() != null) {
-
-            long cpuDelta = stats.getCpuStats().getCpuUsage().getTotalUsage() - stats.getPreCpuStats().getCpuUsage().getTotalUsage();
-            long systemCpuDelta = stats.getCpuStats().getSystemCpuUsage() - stats.getPreCpuStats().getSystemCpuUsage();
-
-            if (systemCpuDelta > 0 && cpuDelta > 0) {
-                cpuUsagePercent = ((double) cpuDelta / (double) systemCpuDelta) * stats.getCpuStats().getOnlineCpus() * 100.0;
-            }
-        }
-        var cpuStats = new ContainerStatsDto.CpuStatsDto(cpuUsagePercent);
-
+        double cpuUsagePercent = calculateCpuPercentage(stats);
+        var cpuStatsDto = new ContainerStatsDto.CpuStatsDto(cpuUsagePercent);
+        
         long rxBytes = 0L;
         long txBytes = 0L;
         if (stats.getNetworks() != null) {
-            rxBytes = stats.getNetworks().values().stream().mapToLong(net -> net.getRxBytes()).sum();
-            txBytes = stats.getNetworks().values().stream().mapToLong(net -> net.getTxBytes()).sum();
+            rxBytes = stats.getNetworks().values().stream().mapToLong(net -> net.getRxBytes() != null ? net.getRxBytes() : 0L).sum();
+            txBytes = stats.getNetworks().values().stream().mapToLong(net -> net.getTxBytes() != null ? net.getTxBytes() : 0L).sum();
         }
         var netStats = new ContainerStatsDto.NetworkStatsDto(rxBytes, txBytes);
 
-        String name = (container.getNames() != null && container.getNames().length > 0) ? container.getNames()[0].substring(1) : container.getId().substring(0, 12);
-
+        String name = (container.getNames() != null && container.getNames().length > 0)
+                ? container.getNames()[0].substring(1)
+                : container.getId().substring(0, 12);
 
         return new ContainerStatsDto(
-            container.getId(),
-            name, 
-            container.getStatus(),
-            container.getImage(),
-            cpuStats,
-            memStats,
-            netStats
+                container.getId(),
+                name,
+                container.getStatus(),
+                container.getImage(),
+                cpuStatsDto,
+                memStats,
+                netStats
         );
     }
 
+    private double calculateCpuPercentage(Statistics stats) {
+        if (stats == null || stats.getCpuStats() == null || stats.getPreCpuStats() == null) {
+            return 0.0;
+        }
+
+        var cpuStats = stats.getCpuStats();
+        var preCpuStats = stats.getPreCpuStats();
+
+        if (cpuStats.getCpuUsage() == null || preCpuStats.getCpuUsage() == null ||
+            cpuStats.getCpuUsage().getTotalUsage() == null || preCpuStats.getCpuUsage().getTotalUsage() == null ||
+            cpuStats.getSystemCpuUsage() == null || preCpuStats.getSystemCpuUsage() == null) {
+            return 0.0;
+        }
+
+        long cpuDelta = cpuStats.getCpuUsage().getTotalUsage() - preCpuStats.getCpuUsage().getTotalUsage();
+        long systemCpuDelta = cpuStats.getSystemCpuUsage() - preCpuStats.getSystemCpuUsage();
+
+        if (systemCpuDelta <= 0 || cpuDelta < 0) {
+            return 0.0;
+        }
+
+        int numberOfCpus = getNumberOfCpus(cpuStats);
+        
+        double cpuUsagePercent = ((double) cpuDelta / (double) systemCpuDelta) * numberOfCpus * 100.0;
+        
+        return Math.min(cpuUsagePercent, 100.0);
+    }
+
+    private int getNumberOfCpus(com.github.dockerjava.api.model.CpuStatsConfig cpuStats) {
+        if (cpuStats.getOnlineCpus() != null && cpuStats.getOnlineCpus() > 0) {
+            return cpuStats.getOnlineCpus().intValue();
+        }
+        
+        if (cpuStats.getCpuUsage() != null && cpuStats.getCpuUsage().getPercpuUsage() != null) {
+            return cpuStats.getCpuUsage().getPercpuUsage().size();
+        }
+        return Runtime.getRuntime().availableProcessors();
+    }
     
     private Statistics getLatestStats(String containerId) {
-        final Statistics[] stats = new Statistics[1];
-        final CountDownLatch latch = new CountDownLatch(1);
+        final Statistics[] statsArray = new Statistics[2]; 
+        final CountDownLatch latch = new CountDownLatch(2);
 
         ResultCallback.Adapter<Statistics> callback = new ResultCallback.Adapter<>() {
+            private int count = 0;
+            
             @Override
             public void onNext(Statistics statistics) {
-                stats[0] = statistics;
-                latch.countDown();
-                try {
-                    close();
-                } catch (IOException e) {
+                if (count < 2) {
+                    statsArray[count] = statistics;
+                    count++;
+                    latch.countDown();
+                    
+                    if (count == 2) {
+                        try {
+                            close();
+                        } catch (IOException e) {
+                        }
+                    }
                 }
             }
         };
 
         try {
             dockerClient.statsCmd(containerId).exec(callback);
-            latch.await(2, TimeUnit.SECONDS);
+            boolean completed = latch.await(5, TimeUnit.SECONDS);
+            
+            if (!completed || statsArray[1] == null) {
+                return statsArray[0] != null ? statsArray[0] : new Statistics();
+            }
+            
+            return statsArray[1];
+            
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            return new Statistics();
         }
-
-        return stats[0] != null ? stats[0] : new Statistics();
     }
-
 }
