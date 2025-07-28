@@ -1,0 +1,16 @@
+<div class="w-auto h-screen bg-[#ffffff] flex flex-col py-6 px-14 text-shadow-gray-600">
+    <ul class="space-y-4">
+        <li 
+            class="flex items-center gap-3 cursor-pointer rounded"
+            [ngClass]="{'bg-[#e6f7ed] text-[#62bc83]': router.url === '/containers', 'hover:text-[#62bc83]': true}"
+        >
+            <a 
+                [routerLink]="['/containers']" 
+                class="w-full h-full block px-3 py-2"
+                [ngClass]="{'text-[#62bc83]': router.url === '/containers'}"
+            >
+                Containers
+            </a>
+        </li>
+    </ul>
+</div>
