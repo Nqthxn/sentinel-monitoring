@@ -1,7 +1,20 @@
-<div class="w-auto h-screen bg-[#ffffff] flex flex-col py-6 px-14 text-shadow-gray-600">
-    <ul class="space-y-4">
+<div class="w-60 h-screen bg-[#ffffff] flex flex-col py-6 px-3 text-gray-400">
+    <ul class="space-y-4 flex items-start flex-col font-semibold">
         <li 
-            class="flex items-center gap-3 cursor-pointer rounded"
+            class="gap-3 cursor-pointer rounded w-full"
+            [ngClass]="{'bg-[#e6f7ed] text-[#62bc83]': router.url === '/', 'hover:text-[#62bc83]': true}"
+        >
+            <a 
+                [routerLink]="['/']" 
+                class="w-full h-full block px-3 py-2"
+                [ngClass]="{'text-[#62bc83]': router.url === '/'}"
+            >
+                <fa-icon [icon]="faHouse" class="mr-1"></fa-icon>
+                Home
+            </a>
+        </li>
+                <li 
+            class="flex items-center gap-3 cursor-pointer rounded w-full"
             [ngClass]="{'bg-[#e6f7ed] text-[#62bc83]': router.url === '/containers', 'hover:text-[#62bc83]': true}"
         >
             <a 
@@ -9,6 +22,7 @@
                 class="w-full h-full block px-3 py-2"
                 [ngClass]="{'text-[#62bc83]': router.url === '/containers'}"
             >
+                <fa-icon [icon]="faBoxOpen" class="mr-1"></fa-icon>
                 Containers
             </a>
         </li>
