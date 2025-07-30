@@ -1,6 +1,7 @@
 package com.nathan.sentinel.service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -12,15 +13,19 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.Statistics;
+import com.nathan.sentinel.entity.ContainerStat;
+import com.nathan.sentinel.repository.ContainerStatRepository;
 import com.nathan.sentinel.service.dto.ContainerStatsDto;
 
 
 @Service
 public class DockerStatsService {
     private final DockerClient dockerClient;
-
-    public DockerStatsService(DockerClient dockerClient){
+    private final ContainerStatRepository containerStatRepository;
+    
+    public DockerStatsService(DockerClient dockerClient, ContainerStatRepository containerStatRepository){
         this.dockerClient = dockerClient;
+        this.containerStatRepository = containerStatRepository;
     }
 
     public List<ContainerStatsDto> getRunningContainers(){
@@ -54,6 +59,18 @@ public class DockerStatsService {
             txBytes = stats.getNetworks().values().stream().mapToLong(net -> net.getTxBytes() != null ? net.getTxBytes() : 0L).sum();
         }
         var netStats = new ContainerStatsDto.NetworkStatsDto(rxBytes, txBytes);
+
+                ContainerStat statToSave = new ContainerStat(
+                container.getId(),
+                LocalDateTime.now(),
+                cpuUsagePercent,
+                usageBytes,
+                limitBytes,
+                rxBytes,
+                txBytes
+        );
+        containerStatRepository.save(statToSave);
+
 
         String name = (container.getNames() != null && container.getNames().length > 0)
                 ? container.getNames()[0].substring(1)

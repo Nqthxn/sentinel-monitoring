@@ -1,15 +1,32 @@
-version: '3.8'
 services:
-  backend:
-    build: 
-      context: ./sentinel-backend/sentinel-backend
-    ports: 
-      - "8080:8080" 
+  db:
+    image: postgres:14-alpine
+    ports:
+      - "5433:5433"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=sentinel
 
-  frontend: 
+  backend:
     build:
-      context: ./sentinel-frontend 
-    ports: 
-      - "4200:80"
+      context: ./sentinel-backend/sentinel-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on: 
+      - db
+
+  frontend:
+    build:
+      context: ./sentinel-frontend
+    ports:
+      - "4200:80"
+    depends_on:
       - backend
+
+volumes: 
+  postgres_data:
