@@ -4,9 +4,12 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nathan.sentinel.entity.ContainerStat;
 import com.nathan.sentinel.service.DockerStatsService;
 import com.nathan.sentinel.service.dto.ContainerStatsDto;
 
@@ -25,4 +28,11 @@ public class ContainerController {
         return dockerStatsService.getRunningContainers();
     }
 
+    @GetMapping("/{containerId}/history")
+    public List<ContainerStat> getContainerHistory(
+        @PathVariable String containerId, 
+        @RequestParam(defaultValue="1") int hours){
+            return dockerStatsService.getHistoricalStats(containerId, hours);
+        }
+    
 }
