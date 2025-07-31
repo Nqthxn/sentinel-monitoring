@@ -1,0 +1,18 @@
+<div class="p-4">
+  <h1 class="text-2xl font-bold mb-4">Container Details: {{ containerId }}</h1>
+
+  <div *ngIf="historicalData" class="bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-semibold mb-2">CPU Usage Over Time (%)</h2>
+    <ngx-charts-line-chart
+      [view]="[700, 300]"
+      [results]="cpuChartData"
+      [xAxis]="true"
+      [yAxis]="true"
+      [legend]="false"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+      xAxisLabel="Time"
+      yAxisLabel="CPU Usage (%)">
+    </ngx-charts-line-chart>
+  </div>
+</div>

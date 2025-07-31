@@ -3,11 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { ContainerService } from '../../services/container.service';
 import { ContainerData } from '../../services/container.service';
 import { FormatBytesPipe } from "../../pipes/format-bytes.pipe";
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-container-list',
   standalone: true, 
-  imports: [CommonModule, FormatBytesPipe],
+  imports: [CommonModule, FormatBytesPipe, RouterLink],
   templateUrl: './container-list.component.html',
   styleUrl: './container-list.component.scss'
 })

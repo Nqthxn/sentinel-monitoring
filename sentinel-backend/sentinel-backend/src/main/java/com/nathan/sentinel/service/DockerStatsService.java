@@ -165,4 +165,10 @@ public class DockerStatsService {
             return new Statistics();
         }
     }
+
+    public List<ContainerStat> getHistoricalStats(String containerId, int hours){
+        LocalDateTime startTime = LocalDateTime.now().minusHours(hours);
+
+        return containerStatRepository.findByContainerIdAndTimestampAfter(containerId, startTime);
+    }
 }

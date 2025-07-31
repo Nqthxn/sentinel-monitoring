@@ -25,6 +25,17 @@ export interface NetworkStats{
   txBytes: number,
 }
 
+export interface ContainerStatHistory{
+  id: number,
+  containerId: string,
+  timestamp: string,
+  cpuUsagePercent: number,
+  memoryUsageBytes: number,
+  memoryLimitBytes: number,
+  networkRxBytes: number,
+  networkTxBytes: number  
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -34,5 +45,9 @@ export class ContainerService {
 
   getRunningContainers(): Observable<ContainerData[]>{
     return this.http.get<ContainerData[]>(`${this.baseUrl}/containers`);
+  }
+
+  getContainerHistory(containerId: string): Observable<ContainerStatHistory[]>{
+    return this.http.get<ContainerStatHistory[]>(`${this.baseUrl}/containers/${containerId}/history`);
   }
 }
