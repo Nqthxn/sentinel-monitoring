@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ContainerService } from '../../services/container.service';
 import { ContainerData } from '../../services/container.service';
 import { FormatBytesPipe } from "../../pipes/format-bytes.pipe";
 import { RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-container-list',
@@ -12,24 +14,27 @@ import { RouterLink } from '@angular/router';
   templateUrl: './container-list.component.html',
   styleUrl: './container-list.component.scss'
 })
-export class ContainerListComponent implements OnInit{
-  containerData: ContainerData[] | null = null; 
-  
-  constructor(private containerService: ContainerService){}
+export class ContainerListComponent implements OnInit, OnDestroy{
+  containerData: ContainerData[] = [];
+  private statsSubscription: Subscription | undefined; 
+
+  constructor(private websocketService: WebsocketService){}
 
   ngOnInit(): void {
-      this.getRunningContainers();
+      this.statsSubscription = this.websocketService.stats$.subscribe(stats => {
+        this.containerData = stats;
+      });
+
+      this.websocketService.activate();
   }
 
-  getRunningContainers(){
-    this.containerService.getRunningContainers().subscribe({
-      next: (res: ContainerData[]) => {
-        this.containerData = res; 
-        console.log('Data : ', res);
-      },
-      error: (err) => {
-        console.error(err);
+  ngOnDestroy(): void {
+      if(this.statsSubscription){
+        this.statsSubscription.unsubscribe();
       }
-    })
+      this.websocketService.deactivate();
   }
+
+
+
 }
