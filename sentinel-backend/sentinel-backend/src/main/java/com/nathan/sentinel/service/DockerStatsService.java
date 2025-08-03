@@ -16,6 +16,7 @@ import com.github.dockerjava.api.model.Statistics;
 import com.nathan.sentinel.entity.ContainerStat;
 import com.nathan.sentinel.repository.ContainerStatRepository;
 import com.nathan.sentinel.service.dto.ContainerStatsDto;
+import com.nathan.sentinel.service.dto.ContainerSummaryDto;
 
 
 @Service
@@ -170,5 +171,19 @@ public class DockerStatsService {
         LocalDateTime startTime = LocalDateTime.now().minusHours(hours);
 
         return containerStatRepository.findByContainerIdAndTimestampAfter(containerId, startTime);
+    }
+
+    public ContainerSummaryDto getContainerSummary(){
+        List<Container> allContainers = dockerClient.listContainersCmd().withShowAll(true).exec();
+
+        long runningCount = allContainers.stream().filter(c -> c.getState().equals("running")).count();
+
+        long stoppedCount = allContainers.size() - runningCount;
+
+        long imageCount = dockerClient.listImagesCmd().exec().size();
+
+        long totalDataSaved = containerStatRepository.count();
+
+        return new ContainerSummaryDto(runningCount, stoppedCount, imageCount, totalDataSaved);
     }
 }
