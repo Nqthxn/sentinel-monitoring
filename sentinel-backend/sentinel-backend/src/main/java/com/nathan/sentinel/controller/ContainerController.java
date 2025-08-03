@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nathan.sentinel.entity.ContainerStat;
 import com.nathan.sentinel.service.DockerStatsService;
+import com.nathan.sentinel.service.dto.ContainerHistorySummaryDto;
 import com.nathan.sentinel.service.dto.ContainerStatsDto;
 
 @RestController
@@ -32,5 +33,10 @@ public class ContainerController {
         @RequestParam(defaultValue="1") int hours){
             return dockerStatsService.getHistoricalStats(containerId, hours);
         }
+
+    @GetMapping("/{containerId}/summary")
+    public ContainerHistorySummaryDto getContainerHistorySummary(@PathVariable String containerId){
+            return dockerStatsService.getHistorySummary(containerId);
+    }
     
 }

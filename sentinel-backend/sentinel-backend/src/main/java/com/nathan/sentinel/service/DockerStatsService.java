@@ -15,6 +15,7 @@ import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.Statistics;
 import com.nathan.sentinel.entity.ContainerStat;
 import com.nathan.sentinel.repository.ContainerStatRepository;
+import com.nathan.sentinel.service.dto.ContainerHistorySummaryDto;
 import com.nathan.sentinel.service.dto.ContainerStatsDto;
 import com.nathan.sentinel.service.dto.ContainerSummaryDto;
 
@@ -185,5 +186,9 @@ public class DockerStatsService {
         long totalDataSaved = containerStatRepository.count();
 
         return new ContainerSummaryDto(runningCount, stoppedCount, imageCount, totalDataSaved);
+    }
+
+    public ContainerHistorySummaryDto getHistorySummary(String containerId){
+        return containerStatRepository.getHistorySummaryForContainer(containerId);
     }
 }
