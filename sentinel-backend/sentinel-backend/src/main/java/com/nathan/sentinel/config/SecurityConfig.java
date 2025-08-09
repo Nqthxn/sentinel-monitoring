@@ -23,7 +23,6 @@ import com.nathan.sentinel.repository.UserRepository;
 public class SecurityConfig {
 
     private final UserRepository userRepository;
-
     public SecurityConfig(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
