@@ -89,7 +89,7 @@ public class DockerStatsService {
         );
     }
 
-    private double calculateCpuPercentage(Statistics stats) {
+    public double calculateCpuPercentage(Statistics stats) {
         if (stats == null || stats.getCpuStats() == null || stats.getPreCpuStats() == null) {
             return 0.0;
         }
