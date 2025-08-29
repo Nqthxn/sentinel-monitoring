@@ -1,39 +1,253 @@
-<div class="p-4">
-  <h1 class="text-2xl font-bold mb-4">Running Containers</h1>
-  <div *ngIf="containerData">
-    <table class="min-w-full bg-white border border-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="py-2 px-4 border-b">Name</th>
-          <th class="py-2 px-4 border-b">Image</th>
-          <th class="py-2 px-4 border-b">Status</th>
-          <th class="py-2 px-4 border-b">Memory Usage</th>
-          <th class="py-2 px-4 border-b">CPU Usage</th>
-
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let container of containerData" class="hover:bg-gray-100">
-          <td class="py-2 px-4 border-b">
-            <a [routerLink]="['/containers', container.id]" class="text-blue-600 hover:underline">
-              {{ container.name }}
-            </a>
-          </td>
-          <td class="py-2 px-4 border-b">{{ container.image }}</td>
-          <td class="py-2 px-4 border-b">{{ container.status }}</td>
-          <td class="py-2 px-4 border-b">
-            {{ container.memory.usageBytes | formatBytes }} / {{ container.memory.limitBytes | formatBytes }}
-          </td>
-          <td class="py-2 px-4 border-b">
-            <div class="relative w-full bg-gray-200 rounded-full h-5">
-              <div class="bg-blue-600 h-5 rounded-full text-center text-white text-xs font-medium leading-5"
-                  [style.width]="container.cpu.usagePercent + '%'">
-                  {{ container.cpu.usagePercent.toFixed(2) }}%
-              </div>
+<!-- Content Area -->
+<div class="flex-1 p-6 overflow-y-auto">
+    <!-- Summary Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="bg-gray-800 p-5 rounded-xl border border-gray-700">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm font-medium text-gray-400 uppercase">Total Containers</p>
+                    <p class="text-3xl font-bold text-white mt-1">12</p>
+                </div>
+                <div class="p-2 bg-brand/20 rounded-lg">
+                    <svg class="w-6 h-6 text-brand-light" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19H2a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2z"></path><path d="M5 5h14"></path></svg>
+                </div>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+        </div>
+        <div class="bg-gray-800 p-5 rounded-xl border border-gray-700">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm font-medium text-gray-400 uppercase">Running</p>
+                    <p class="text-3xl font-bold text-green-400 mt-1">8</p>
+                </div>
+                <div class="p-2 bg-green-500/20 rounded-lg">
+                    <svg class="w-6 h-6 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.49 9A9 9 0 1 1 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-800 p-5 rounded-xl border border-gray-700">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm font-medium text-gray-400 uppercase">Stopped</p>
+                    <p class="text-3xl font-bold text-red-500 mt-1">3</p>
+                </div>
+                <div class="p-2 bg-red-500/20 rounded-lg">
+                    <svg class="w-6 h-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-800 p-5 rounded-xl border border-gray-700">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm font-medium text-gray-400 uppercase">Issues</p>
+                    <p class="text-3xl font-bold text-yellow-400 mt-1">1</p>
+                </div>
+                <div class="p-2 bg-yellow-500/20 rounded-lg">
+                    <svg class="w-6 h-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <!-- Card 1: Running -->
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden flex flex-col">
+            <div class="p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <img src="https://placehold.co/40x40/34D399/1F2937?text=N" class="w-10 h-10 rounded-lg" alt="Nginx Logo">
+                        <div class="ml-4">
+                            <h3 class="font-bold text-white">prod-web-server</h3>
+                            <p class="text-xs text-gray-400">nginx:latest</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-300">
+                            <span class="w-2 h-2 mr-1.5 bg-green-400 rounded-full"></span>
+                            Running
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-between text-sm">
+                    <div class="text-center">
+                        <p class="text-gray-400">CPU</p>
+                        <p class="font-semibold text-white">15%</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-400">Memory</p>
+                        <p class="font-semibold text-white">256MB / 1GB</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-400">Uptime</p>
+                        <p class="font-semibold text-white">72h</p>
+                    </div>
+                </div>
+                <!-- Sparkline Charts -->
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-xs text-gray-500 mb-1">CPU Usage</p>
+                        <svg class="w-full h-10" preserveAspectRatio="none" fill="none" stroke="#34D399" stroke-width="2" viewBox="0 0 100 30"><polyline points="0,25 10,20 20,22 30,18 40,15 50,18 60,12 70,15 80,10 90,14 100,10"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 mb-1">Memory Usage</p>
+                        <svg class="w-full h-10" preserveAspectRatio="none" fill="none" stroke="#60A5FA" stroke-width="2" viewBox="0 0 100 30"><polyline points="0,20 10,22 20,25 30,23 40,20 50,18 60,22 70,25 80,26 90,24 100,22"/></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-800/50 mt-auto p-3 border-t border-gray-700 flex items-center justify-end space-x-2">
+                <button class="px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-md transition">Logs</button>
+                <button class="px-3 py-1.5 text-xs font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded-md transition">Restart</button>
+                <button class="px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition">Stop</button>
+            </div>
+        </div>
+
+        <!-- Card 2: Stopped -->
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden flex flex-col">
+            <div class="p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <img src="https://placehold.co/40x40/F87171/1F2937?text=R" class="w-10 h-10 rounded-lg" alt="Redis Logo">
+                        <div class="ml-4">
+                            <h3 class="font-bold text-white">cache-service</h3>
+                            <p class="text-xs text-gray-400">redis:alpine</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/20 text-red-300">
+                            <span class="w-2 h-2 mr-1.5 bg-red-500 rounded-full"></span>
+                            Stopped
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-between text-sm text-gray-500">
+                    <div class="text-center">
+                        <p>CPU</p>
+                        <p class="font-semibold">0%</p>
+                    </div>
+                    <div class="text-center">
+                        <p>Memory</p>
+                        <p class="font-semibold">0MB / 512MB</p>
+                    </div>
+                    <div class="text-center">
+                        <p>Last Active</p>
+                        <p class="font-semibold">2h ago</p>
+                    </div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-4 opacity-30">
+                    <div>
+                        <p class="text-xs text-gray-500 mb-1">CPU Usage</p>
+                        <svg class="w-full h-10" preserveAspectRatio="none" fill="none" stroke="#4B5563" stroke-width="2" viewBox="0 0 100 30"><line x1="0" y1="28" x2="100" y2="28"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 mb-1">Memory Usage</p>
+                        <svg class="w-full h-10" preserveAspectRatio="none" fill="none" stroke="#4B5563" stroke-width="2" viewBox="0 0 100 30"><line x1="0" y1="28" x2="100" y2="28"/></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-800/50 mt-auto p-3 border-t border-gray-700 flex items-center justify-end space-x-2">
+                <button class="px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-md transition">Logs</button>
+                <button class="px-3 py-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition">Start</button>
+            </div>
+        </div>
+
+        <!-- Card 3: Issue -->
+        <div class="bg-gray-800 rounded-xl border border-yellow-500/50 overflow-hidden flex flex-col ring-2 ring-yellow-500/20">
+            <div class="p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <img src="https://placehold.co/40x40/FBBF24/1F2937?text=DB" class="w-10 h-10 rounded-lg" alt="DB Logo">
+                        <div class="ml-4">
+                            <h3 class="font-bold text-white">user-database</h3>
+                            <p class="text-xs text-gray-400">postgres:13</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-300">
+                            <span class="w-2 h-2 mr-1.5 bg-yellow-400 rounded-full animate-pulse"></span>
+                            Unhealthy
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-between text-sm">
+                    <div class="text-center">
+                        <p class="text-gray-400">CPU</p>
+                        <p class="font-semibold text-red-500">98%</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-400">Memory</p>
+                        <p class="font-semibold text-white">1.8GB / 2GB</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-400">Uptime</p>
+                        <p class="font-semibold text-white">14d</p>
+                    </div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-xs text-gray-500 mb-1">CPU Usage</p>
+                        <svg class="w-full h-10" preserveAspectRatio="none" fill="none" stroke="#F87171" stroke-width="2" viewBox="0 0 100 30"><polyline points="0,25 10,15 20,10 30,8 40,5 50,3 60,4 70,2 80,3 90,5 100,2"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 mb-1">Memory Usage</p>
+                        <svg class="w-full h-10" preserveAspectRatio="none" fill="none" stroke="#60A5FA" stroke-width="2" viewBox="0 0 100 30"><polyline points="0,10 10,8 20,6 30,5 40,4 50,3 60,4 70,5 80,4 90,3 100,2"/></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-800/50 mt-auto p-3 border-t border-gray-700 flex items-center justify-end space-x-2">
+                <button class="px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-md transition">Logs</button>
+                <button class="px-3 py-1.5 text-xs font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded-md transition">Restart</button>
+                <button class="px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition">Stop</button>
+            </div>
+        </div>
+
+        <!-- Card 4: Running -->
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden flex flex-col">
+            <div class="p-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <img src="https://placehold.co/40x40/60A5FA/1F2937?text=API" class="w-10 h-10 rounded-lg" alt="API Logo">
+                        <div class="ml-4">
+                            <h3 class="font-bold text-white">auth-api-v2</h3>
+                            <p class="text-xs text-gray-400">node:18-alpine</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-300">
+                            <span class="w-2 h-2 mr-1.5 bg-green-400 rounded-full"></span>
+                            Running
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-between text-sm">
+                    <div class="text-center">
+                        <p class="text-gray-400">CPU</p>
+                        <p class="font-semibold text-white">5%</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-400">Memory</p>
+                        <p class="font-semibold text-white">128MB / 512MB</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-400">Uptime</p>
+                        <p class="font-semibold text-white">6h</p>
+                    </div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-xs text-gray-500 mb-1">CPU Usage</p>
+                        <svg class="w-full h-10" preserveAspectRatio="none" fill="none" stroke="#34D399" stroke-width="2" viewBox="0 0 100 30"><polyline points="0,28 10,25 20,26 30,28 40,27 50,25 60,26 70,24 80,25 90,26 100,28"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 mb-1">Memory Usage</p>
+                        <svg class="w-full h-10" preserveAspectRatio="none" fill="none" stroke="#60A5FA" stroke-width="2" viewBox="0 0 100 30"><polyline points="0,20 10,18 20,19 30,20 40,22 50,21 60,20 70,18 80,19 90,20 100,18"/></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-800/50 mt-auto p-3 border-t border-gray-700 flex items-center justify-end space-x-2">
+                <button class="px-3 py-1.5 text-xs font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-md transition">Logs</button>
+                <button class="px-3 py-1.5 text-xs font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded-md transition">Restart</button>
+                <button class="px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition">Stop</button>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,30 +1,25 @@
-<div class="w-60 h-screen bg-[#ffffff] flex flex-col py-6 px-3 text-gray-400">
-    <ul class="space-y-4 flex items-start flex-col font-semibold">
-        <li 
-            class="gap-3 cursor-pointer rounded w-full"
-            [ngClass]="{'bg-[#e6f7ed] text-[#62bc83]': router.url === '/', 'hover:text-[#62bc83]': true}"
-        >
-            <a 
-                [routerLink]="['/']" 
-                class="w-full h-full block px-3 py-2"
-                [ngClass]="{'text-[#62bc83]': router.url === '/'}"
-            >
-                <fa-icon [icon]="faHouse" class="mr-1"></fa-icon>
-                Home
-            </a>
-        </li>
-                <li 
-            class="flex items-center gap-3 cursor-pointer rounded w-full"
-            [ngClass]="{'bg-[#e6f7ed] text-[#62bc83]': router.url === '/containers', 'hover:text-[#62bc83]': true}"
-        >
-            <a 
-                [routerLink]="['/containers']" 
-                class="w-full h-full block px-3 py-2"
-                [ngClass]="{'text-[#62bc83]': router.url === '/containers'}"
-            >
-                <fa-icon [icon]="faBoxOpen" class="mr-1"></fa-icon>
-                Containers
-            </a>
-        </li>
-    </ul>
-</div>
+<aside class="w-64 flex-shrink-0 bg-gray-800 border-r border-gray-700 flex flex-col h-full">
+    <div class="h-16 flex items-center justify-center px-4 border-b border-gray-700">
+        <svg class="w-8 h-8 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+        <span class="ml-3 text-xl font-bold tracking-wider">SENTINEL</span>
+    </div>
+    
+    <nav class="flex-1 px-4 py-6 space-y-2">
+        <a href="#" class="flex items-center px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors duration-200">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            Dashboard
+        </a>
+        <a href="#" class="flex items-center px-4 py-2.5 text-sm font-medium bg-brand text-white rounded-lg">
+            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19H2a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2z"></path><path d="M5 5h14"></path></svg>
+            Containers
+        </a>
+        
+    </nav>
+    
+    <div class="px-4 py-4 mt-auto border-t border-gray-700">
+        <a href="#" class="flex items-center px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition-colors duration-200">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            Settings
+        </a>
+    </div>
+</aside>
