@@ -1,19 +1,16 @@
-import { Component } from '@angular/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faHouse, faSearch, faBell, faCog, faSun, faMoon, faCircleUser } from '@fortawesome/free-solid-svg-icons';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
-  imports: [FontAwesomeModule],
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-  faHouse = faHouse;
-  faSearch = faSearch;
-  faBell = faBell;
-  faCog = faCog;
-  faSun = faSun;
-  faMoon = faMoon;
-  faCircleUser = faCircleUser;
+  auth = inject(AuthService);
+  logout() { this.auth.logout(); }
 }
